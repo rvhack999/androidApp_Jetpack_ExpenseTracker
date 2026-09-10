@@ -16,10 +16,17 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+        //noinspection WrongGradleMethod
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas") // Путь обязательно обернут в кавычки ""
         }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        getByName("debug") {
+            java.srcDir("build/generated/ksp/debug/kotlin")
+        }
     }
 
     buildTypes {
@@ -71,4 +78,28 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
+
+    val nav_version = "2.10.0"
+
+    // Jetpack Compose integration
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // Views/Fragments integration
+    implementation("androidx.navigation:navigation-fragment:$nav_version")
+    implementation("androidx.navigation:navigation-ui:$nav_version")
+
+    // Feature module support for Fragments
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
+
+    // JSON serialization library, works with the Kotlin serialization plugin
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0")
 }
