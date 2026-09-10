@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -15,7 +16,9 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
-
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas") // Путь обязательно обернут в кавычки ""
+        }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -64,4 +67,8 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4")
     // ..
     androidTestImplementation("androidx.compose.ui:ui-test")
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 }
