@@ -51,4 +51,17 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Specify the Compose BOM with a version definition
+    val composeBom = platform("androidx.compose:compose-bom:2026.08.00")
+    implementation(composeBom)
+    testImplementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // Specify Compose library dependencies without a version definition
+    implementation("androidx.compose.foundation:foundation")
+    // ..
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    // ..
+    androidTestImplementation("androidx.compose.ui:ui-test")
 }
