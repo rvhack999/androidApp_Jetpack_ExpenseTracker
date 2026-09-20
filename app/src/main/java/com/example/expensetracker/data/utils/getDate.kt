@@ -1,7 +1,11 @@
 package com.example.expensetracker.data.utils
 
-object NoteColors {
-    val DEFAULT = "#FFFFFF",
-    val RED = "#FFCDD2",
-    val all = listOf(DEFAULT, RED)
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+
+fun getCurrentDateTime(): String {
+    return Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .toString()
 }
