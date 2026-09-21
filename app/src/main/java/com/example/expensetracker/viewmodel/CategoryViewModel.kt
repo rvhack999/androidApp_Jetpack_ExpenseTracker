@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensetracker.data.model.Category
 import com.example.expensetracker.data.repository.CategoryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CategoryViewModel(
+@HiltViewModel
+class CategoryViewModel @Inject constructor(
     private val repository: CategoryRepository
 ) : ViewModel() {
 
@@ -58,7 +61,7 @@ class CategoryViewModel(
     // ====== ДЕЙСТВИЯ ======
 
     // Создать категорию
-    fun addCategory(name: String, color: Color) {
+    fun addCategory(name: String, color: String) {
         viewModelScope.launch {
             try {
                 repository.addCategory(name, color)

@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensetracker.data.model.Expense
 import com.example.expensetracker.data.repository.ExpenseRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ExpenseViewModel(
+@HiltViewModel
+class ExpenseViewModel @Inject constructor(
     private val repository: ExpenseRepository
 ) : ViewModel() {
 

@@ -1,7 +1,7 @@
 package com.example.expensetracker.data.repository
 
 import androidx.compose.ui.graphics.Color
-import com.example.expensetracker.data.db.CategoryDao
+import com.example.expensetracker.data.database.CategoryDao
 import com.example.expensetracker.data.model.Category
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +16,7 @@ class CategoryRepository (private val categoryDao: CategoryDao){
     // Создать категорию
     suspend fun addCategory(
         name: String,
-        color: Color,
+        color: String,
     ): Long {
         val category = Category(
             name = name,

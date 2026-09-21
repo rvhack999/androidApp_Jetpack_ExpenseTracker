@@ -1,7 +1,7 @@
 package com.example.expensetracker.data.repository
 
 import androidx.compose.ui.graphics.Color
-import com.example.expensetracker.data.db.ExpenseDao
+import com.example.expensetracker.data.database.ExpenseDao
 import com.example.expensetracker.data.model.Expense
 import com.example.expensetracker.data.utils.getCurrentDateTime
 import kotlinx.coroutines.flow.Flow
@@ -48,7 +48,7 @@ class ExpenseRepository(
             categoryId = categoryId,
             description = description,
             date = getCurrentDateTime(),
-            color = Color.Cyan,
+            color = "0xFFF5F5DC",
             isPlanned = isPlanned
         )
         expenseDao.insertExpense(expense)

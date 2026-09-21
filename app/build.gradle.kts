@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -102,4 +103,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0")
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 }

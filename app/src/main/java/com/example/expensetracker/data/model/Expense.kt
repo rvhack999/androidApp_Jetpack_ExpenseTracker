@@ -22,6 +22,6 @@ data class Expense(
     val categoryId: Int? = null,
     val description: String = "",
     val date: String,
-    val color: Color,
+    val color: String,
     val isPlanned: Boolean = false
 )
