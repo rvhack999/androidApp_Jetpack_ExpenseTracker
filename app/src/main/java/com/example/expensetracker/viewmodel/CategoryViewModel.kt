@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensetracker.data.model.Category
 import com.example.expensetracker.data.repository.CategoryRepository
+import com.example.expensetracker.data.repository.ExpenseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val repository: CategoryRepository
+    private val repository: CategoryRepository,
+    private val expenseRepository: ExpenseRepository
 ) : ViewModel() {
 
     // ====== СОСТОЯНИЯ ======
@@ -26,6 +28,10 @@ class CategoryViewModel @Inject constructor(
     // Состояние загрузки
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // Есть ли расходы без категории
+    private val _hasUncategorizedExpenses = MutableStateFlow(false)
+    val hasUncategorizedExpenses: StateFlow<Boolean> = _hasUncategorizedExpenses.asStateFlow()
 
     // Ошибки
     private val _error = MutableStateFlow<String?>(null)
@@ -39,6 +45,15 @@ class CategoryViewModel @Inject constructor(
 
     init {
         loadCategories()
+        observeUncategorizedExpenses()
+    }
+
+    private fun observeUncategorizedExpenses() {
+        viewModelScope.launch {
+            expenseRepository.getUncategorizedCount().collect { count ->
+                _hasUncategorizedExpenses.value = count > 0
+            }
+        }
     }
 
     // ====== ЗАГРУЗКА ДАННЫХ ======
@@ -49,8 +64,8 @@ class CategoryViewModel @Inject constructor(
                 _isLoading.value = true
                 repository.getAllCategories().collect { categories ->
                     _categories.value = categories
+                    _isLoading.value = false  // ← СБРАСЫВАЕМ ЗДЕСЬ
                 }
-                _isLoading.value = false
             } catch (e: Exception) {
                 _error.value = "Ошибка загрузки: ${e.message}"
                 _isLoading.value = false

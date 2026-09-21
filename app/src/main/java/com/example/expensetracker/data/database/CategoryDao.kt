@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.expensetracker.data.model.Category
+import com.example.expensetracker.data.model.Expense
 import kotlinx.coroutines.flow.Flow
 
 
@@ -31,4 +32,7 @@ interface CategoryDao{
     // удалить
     @Delete
     suspend fun deleteCategory(category: Category)
+
+    @Query("SELECT * FROM expenses WHERE categoryId IS NULL ORDER BY date DESC")
+    fun getUncategorizedExpenses(): Flow<List<Expense>>
 }

@@ -16,8 +16,9 @@ interface ExpenseDao {
     fun getAllExpenses(): Flow<List<Expense>>
 
     // 2. По категории, сначала новые
-    @Query("SELECT * FROM expenses WHERE categoryId = :categoryId ORDER BY date DESC")
+    @Query("SELECT * FROM expenses WHERE categoryId = :categoryId AND isPlanned = 0 ORDER BY date DESC")
     fun getExpensesByCategory(categoryId: Int): Flow<List<Expense>>
+
 
     // 3. Планируемые расходы
     @Query("SELECT * FROM expenses WHERE isPlanned = 1 ORDER BY date DESC")
@@ -28,8 +29,21 @@ interface ExpenseDao {
     fun getTotalForPeriod(startDate: String, endDate: String): Flow<Long?>
 
     // 5. Сумма по категории за период
-    @Query("SELECT SUM(amount) FROM expenses WHERE categoryId = :categoryId AND date BETWEEN :startDate AND :endDate")
-    fun getTotalForCategoryAndPeriod(categoryId: Int, startDate: String, endDate: String): Flow<Long?>
+    // Сумма выполненных расходов за период
+    @Query("SELECT SUM(amount) FROM expenses WHERE categoryId = :categoryId AND isPlanned = 0 AND date BETWEEN :startDate AND :endDate")
+    fun getTotalForCategoryAndPeriod(
+        categoryId: Int,
+        startDate: String,
+        endDate: String
+    ): Flow<Long?>
+
+    // Сумма планируемых расходов за период
+    @Query("SELECT SUM(amount) FROM expenses WHERE categoryId = :categoryId AND isPlanned = 1 AND date BETWEEN :startDate AND :endDate")
+    fun getPlannedTotalForCategoryAndPeriod(
+        categoryId: Int,
+        startDate: String,
+        endDate: String
+    ): Flow<Long?>
 
     // 6. Количество расходов в категории
     @Query("SELECT COUNT(*) FROM expenses WHERE categoryId = :categoryId")
@@ -46,4 +60,26 @@ interface ExpenseDao {
     // 9. Удалить расход
     @Delete
     suspend fun deleteExpense(expense: Expense)
+
+    @Query("SELECT * FROM expenses WHERE isPlanned = 1 AND categoryId = :categoryId ORDER BY date DESC")
+    fun getPlannedExpensesByCategory(categoryId: Int): Flow<List<Expense>>
+
+    // Планируемые расходы без категории
+    @Query("SELECT * FROM expenses WHERE categoryId IS NULL AND isPlanned = 1 ORDER BY date DESC")
+    fun getUncategorizedPlannedExpenses(): Flow<List<Expense>>
+
+    // Сумма выполненных расходов без категории за период
+    @Query("SELECT SUM(amount) FROM expenses WHERE categoryId IS NULL AND isPlanned = 0 AND date BETWEEN :startDate AND :endDate")
+    fun getUncategorizedTotalForPeriod(startDate: String, endDate: String): Flow<Long?>
+
+    // Сумма планируемых расходов без категории за период
+    @Query("SELECT SUM(amount) FROM expenses WHERE categoryId IS NULL AND isPlanned = 1 AND date BETWEEN :startDate AND :endDate")
+    fun getUncategorizedPlannedTotalForPeriod(startDate: String, endDate: String): Flow<Long?>
+
+    // Есть ли расходы без категории?
+    @Query("SELECT COUNT(*) FROM expenses WHERE categoryId IS NULL")
+    fun getUncategorizedCount(): Flow<Int>
+
+    @Query("SELECT * FROM expenses WHERE categoryId IS NULL AND isPlanned = 0 ORDER BY date DESC")
+    fun getUncategorizedExpenses(): Flow<List<Expense>>
 }

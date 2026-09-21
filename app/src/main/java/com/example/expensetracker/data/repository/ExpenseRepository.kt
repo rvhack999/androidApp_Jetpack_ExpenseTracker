@@ -28,13 +28,17 @@ class ExpenseRepository(
     // Сумма по категории
     fun getTotalForCategoryAndPeriod(
         categoryId: Int,
-        start: String,
-        end: String
-    ): Flow<Long?> = expenseDao.getTotalForCategoryAndPeriod(
-        categoryId = categoryId,
-        startDate = start,
-        endDate = end
-    )
+        startDate: String,
+        endDate: String
+    ): Flow<Long?> =
+        expenseDao.getTotalForCategoryAndPeriod(categoryId, startDate, endDate)
+
+    fun getPlannedTotalForCategoryAndPeriod(
+        categoryId: Int,
+        startDate: String,
+        endDate: String
+    ): Flow<Long?> =
+        expenseDao.getPlannedTotalForCategoryAndPeriod(categoryId, startDate, endDate)
 
     // Добавить расход
     suspend fun addExpense(
@@ -62,4 +66,22 @@ class ExpenseRepository(
 
     // Количество в категории
     suspend fun getExpenseCountInCategory(categoryId: Int): Int = expenseDao.getExpenseCountInCategory(categoryId = categoryId)
+
+    fun getPlannedExpensesByCategory(categoryId: Int): Flow<List<Expense>> =
+        expenseDao.getPlannedExpensesByCategory(categoryId)
+
+    fun getUncategorizedPlannedExpenses(): Flow<List<Expense>> =
+        expenseDao.getUncategorizedPlannedExpenses()
+
+    fun getUncategorizedTotalForPeriod(startDate: String, endDate: String): Flow<Long?> =
+        expenseDao.getUncategorizedTotalForPeriod(startDate, endDate)
+
+    fun getUncategorizedPlannedTotalForPeriod(startDate: String, endDate: String): Flow<Long?> =
+        expenseDao.getUncategorizedPlannedTotalForPeriod(startDate, endDate)
+
+    fun getUncategorizedCount(): Flow<Int> =
+        expenseDao.getUncategorizedCount()
+
+    fun getUncategorizedExpenses(): Flow<List<Expense>> =
+        expenseDao.getUncategorizedExpenses()
 }

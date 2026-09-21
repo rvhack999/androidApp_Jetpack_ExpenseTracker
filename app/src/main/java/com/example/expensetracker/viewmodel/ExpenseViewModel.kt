@@ -1,5 +1,6 @@
 package com.example.expensetracker.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensetracker.data.model.Expense
@@ -13,8 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExpenseViewModel @Inject constructor(
-    private val repository: ExpenseRepository
+    private val repository: ExpenseRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val _plannedTotalSum = MutableStateFlow<Long?>(null)
+    val plannedTotalSum: StateFlow<Long?> = _plannedTotalSum.asStateFlow()
+    private val categoryId: Int = savedStateHandle["categoryId"] ?: 0
 
     // ====== СОСТОЯНИЯ ======
 
@@ -45,8 +51,25 @@ class ExpenseViewModel @Inject constructor(
     // ====== ИНИЦИАЛИЗАЦИЯ ======
 
     init {
-        loadAllExpenses()
-        loadPlannedExpenses()
+
+        loadExpensesByCategoryInternal(categoryId)
+        loadPlannedExpensesInternal(categoryId)
+
+        val now = java.time.LocalDate.now()
+        val startOfMonth = now.withDayOfMonth(1).toString() + "T00:00:00"
+        val endOfMonth = now.toString() + "T23:59:59"
+
+        loadTotalForCategoryInternal(categoryId, startOfMonth, endOfMonth)
+        loadPlannedTotalForCategoryInternal(categoryId, startOfMonth, endOfMonth)
+    }
+
+
+    private fun loadTotalForCategory(categoryId: Int, startDate: String, endDate: String) {
+        viewModelScope.launch {
+            repository.getTotalForCategoryAndPeriod(categoryId, startDate, endDate).collect { sum ->
+                _totalSum.value = sum
+            }
+        }
     }
 
     // ====== ЗАГРУЗКА ======
@@ -61,7 +84,7 @@ class ExpenseViewModel @Inject constructor(
 
     private fun loadPlannedExpenses() {
         viewModelScope.launch {
-            repository.getPlannedExpenses().collect { expenses ->
+            repository.getPlannedExpensesByCategory(categoryId).collect { expenses ->
                 _plannedExpenses.value = expenses
             }
         }
@@ -71,10 +94,44 @@ class ExpenseViewModel @Inject constructor(
 
     // Загрузить расходы по категории
     fun loadExpensesByCategory(categoryId: Int) {
+        loadExpensesByCategoryInternal(categoryId)
+    }
+
+    private fun loadPlannedExpensesInternal(categoryId: Int) {
         viewModelScope.launch {
-            _selectedCategoryId.value = categoryId
-            repository.getExpensesByCategory(categoryId).collect { expenses ->
-                _expenses.value = expenses
+            val flow = if (categoryId == -1) {
+                repository.getUncategorizedPlannedExpenses()
+            } else {
+                repository.getPlannedExpensesByCategory(categoryId)
+            }
+            flow.collect { expenses ->
+                _plannedExpenses.value = expenses
+            }
+        }
+    }
+
+    private fun loadTotalForCategoryInternal(categoryId: Int, startDate: String, endDate: String) {
+        viewModelScope.launch {
+            val flow = if (categoryId == -1) {
+                repository.getUncategorizedTotalForPeriod(startDate, endDate)
+            } else {
+                repository.getTotalForCategoryAndPeriod(categoryId, startDate, endDate)
+            }
+            flow.collect { sum ->
+                _totalSum.value = sum
+            }
+        }
+    }
+
+    private fun loadPlannedTotalForCategoryInternal(categoryId: Int, startDate: String, endDate: String) {
+        viewModelScope.launch {
+            val flow = if (categoryId == -1) {
+                repository.getUncategorizedPlannedTotalForPeriod(startDate, endDate)
+            } else {
+                repository.getPlannedTotalForCategoryAndPeriod(categoryId, startDate, endDate)
+            }
+            flow.collect { sum ->
+                _plannedTotalSum.value = sum
             }
         }
     }
@@ -138,5 +195,53 @@ class ExpenseViewModel @Inject constructor(
     // Очистить ошибку
     fun clearError() {
         _error.value = null
+    }
+
+    fun clearExpenses() {
+        _expenses.value = emptyList()
+    }
+
+    // Переключатель "Показать планируемые"
+    private val _showPlanned = MutableStateFlow(false)
+    val showPlanned: StateFlow<Boolean> = _showPlanned.asStateFlow()
+
+    // Переключить режим
+    fun toggleShowPlanned() {
+        _showPlanned.value = !_showPlanned.value
+        // Сумма уже загружается в init, ничего не нужно
+    }
+
+    fun setShowPlanned(value: Boolean) {
+        _showPlanned.value = value
+    }
+
+    private fun loadPlannedTotalForCategory(categoryId: Int, startDate: String, endDate: String) {
+        viewModelScope.launch {
+            repository.getPlannedTotalForCategoryAndPeriod(categoryId, startDate, endDate).collect { sum ->
+                _plannedTotalSum.value = sum
+            }
+        }
+    }
+
+    // Текущий редактируемый расход
+    private val _currentExpense = MutableStateFlow<Expense?>(null)
+    val currentExpense: StateFlow<Expense?> = _currentExpense.asStateFlow()
+
+    fun setCurrentExpense(expense: Expense?) {
+        _currentExpense.value = expense
+    }
+
+    private fun loadExpensesByCategoryInternal(categoryId: Int) {
+        viewModelScope.launch {
+            val flow = if (categoryId == -1) {
+                repository.getUncategorizedExpenses()
+            } else {
+                repository.getExpensesByCategory(categoryId)
+            }
+            flow.collect { expenses ->
+                _expenses.value = expenses
+                _isLoading.value = false
+            }
+        }
     }
 }
