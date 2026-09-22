@@ -1,7 +1,7 @@
 package com.example.expensetracker.ui.screens
 
+
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,7 +46,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.expensetracker.data.model.Category
 import com.example.expensetracker.viewmodel.CategoryViewModel
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.unit.sp
+import com.example.expensetracker.data.model.AppColors
+import com.example.expensetracker.data.model.TopBarScreen
+import com.example.expensetracker.ui.theme.CustomTopBar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +82,19 @@ fun CategoryListScreen(
 
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { },
+                navigationIcon = {
+                    CustomTopBar(
+                        TopBarScreen.INCOME
+                    ) { }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Добавить категорию")
