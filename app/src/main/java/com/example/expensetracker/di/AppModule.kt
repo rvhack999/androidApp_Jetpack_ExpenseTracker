@@ -4,8 +4,10 @@ import android.content.Context
 import com.example.expensetracker.data.database.AppDatabase
 import com.example.expensetracker.data.database.CategoryDao
 import com.example.expensetracker.data.database.ExpenseDao
+import com.example.expensetracker.data.database.IncomeDao
 import com.example.expensetracker.data.repository.CategoryRepository
 import com.example.expensetracker.data.repository.ExpenseRepository
+import com.example.expensetracker.data.repository.IncomeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,6 +37,10 @@ object AppModule {
         database.CategoryDao()
 
     @Provides
+    fun provideIncomeDao(database: AppDatabase): IncomeDao =
+        database.IncomeDao()
+
+    @Provides
     @Singleton
     fun provideExpenseRepository(expenseDao: ExpenseDao): ExpenseRepository {
         return ExpenseRepository(expenseDao)
@@ -44,5 +50,11 @@ object AppModule {
     @Singleton
     fun provideCategoryRepository(categoryDao: CategoryDao): CategoryRepository {
         return CategoryRepository(categoryDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideIncomeRepository(incomeDao: IncomeDao): IncomeRepository {
+        return IncomeRepository(incomeDao)
     }
 }

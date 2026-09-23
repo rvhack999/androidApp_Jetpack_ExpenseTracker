@@ -6,15 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.expensetracker.data.model.Category
 import com.example.expensetracker.data.model.Expense
+import com.example.expensetracker.data.model.Income
 
 @Database(
-    entities = [Expense::class, Category::class],
+    entities = [Expense::class, Category::class, Income::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase: RoomDatabase(){
     abstract fun ExpenseDao(): ExpenseDao
     abstract fun CategoryDao(): CategoryDao
+    abstract fun IncomeDao(): IncomeDao
 
     companion object{
         @Volatile

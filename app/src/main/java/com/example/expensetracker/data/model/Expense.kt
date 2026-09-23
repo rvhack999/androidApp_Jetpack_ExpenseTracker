@@ -1,6 +1,5 @@
 package com.example.expensetracker.data.model
 
-import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
