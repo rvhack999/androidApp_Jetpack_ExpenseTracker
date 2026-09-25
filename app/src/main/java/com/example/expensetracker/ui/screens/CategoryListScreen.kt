@@ -65,7 +65,7 @@ fun CategoryListScreen(
 
     var showAddDialog by remember { mutableStateOf(false) }
     var editingCategory by remember { mutableStateOf<Category?>(null) }
-    var deletingCategory by remember { mutableStateOf<Category?>(null) }  // ← НОВОЕ
+    var deletingCategory by remember { mutableStateOf<Category?>(null) }
     val hasUncategorized by viewModel.hasUncategorizedExpenses.collectAsState()
     val categoriesWithUncategorized = if (hasUncategorized) {
         listOf(
@@ -87,7 +87,7 @@ fun CategoryListScreen(
                 title = { },
                 navigationIcon = {
                     CustomTopBar(
-                        TopBarScreen.INCOME
+                        TopBarScreen.EXPENSES
                     ) { }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -112,7 +112,7 @@ fun CategoryListScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                categoriesWithUncategorized.isEmpty() -> {  // ← теперь проверяем итоговый список
+                categoriesWithUncategorized.isEmpty() -> {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally

@@ -21,7 +21,7 @@ class IncomeRepository(private val incomeDao: IncomeDao) {
     suspend fun addIncome(
         name: String,
         amount: Long,
-        date: String,
+        color: String,
         description: String
     ){
         val income = Income(
@@ -29,6 +29,7 @@ class IncomeRepository(private val incomeDao: IncomeDao) {
             amount = amount,
             date = getCurrentDateTime(),
             description = description,
+            color = color
         )
     }
 

@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.expensetracker.ui.screens.CategoryListScreen
 import com.example.expensetracker.ui.screens.ExpenseListScreen
+import com.example.expensetracker.ui.screens.IncomeListScreen
 import com.example.expensetracker.ui.theme.ExpenseTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,6 +48,10 @@ class MainActivity : ComponentActivity() {
                                 categoryId = categoryId,
                                 backStackEntry = backStackEntry  // ← ДОБАВИТЬ ЭТУ СТРОКУ
                             )
+                        }
+
+                        composable("income") {
+                            IncomeListScreen(navController = navController)
                         }
                     }
                 }

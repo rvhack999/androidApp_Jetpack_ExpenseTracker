@@ -44,6 +44,10 @@ class ExpenseViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    // Активность
+    private val _isActiveScreen = MutableStateFlow(true)
+    val isActiveScreen: StateFlow<Boolean> = _isActiveScreen.asStateFlow()
+
     // Ошибки
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()

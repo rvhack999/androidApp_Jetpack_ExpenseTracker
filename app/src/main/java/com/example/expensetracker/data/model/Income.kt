@@ -12,4 +12,5 @@ data class Income(
     val amount: Long,
     val date: String,
     val description: String,
+    val color: String,
 )

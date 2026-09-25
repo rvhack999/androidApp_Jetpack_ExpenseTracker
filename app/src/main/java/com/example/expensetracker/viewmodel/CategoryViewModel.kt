@@ -41,6 +41,10 @@ class CategoryViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow<Category?>(null)
     val selectedCategory: StateFlow<Category?> = _selectedCategory.asStateFlow()
 
+    // Активность
+    private val _isActiveScreen = MutableStateFlow(true)
+    val isActiveScreen: StateFlow<Boolean> = _isActiveScreen.asStateFlow()
+
     // ====== ИНИЦИАЛИЗАЦИЯ ======
 
     init {
