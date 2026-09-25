@@ -19,6 +19,13 @@ interface ExpenseDao {
     @Query("SELECT * FROM expenses WHERE categoryId = :categoryId AND isPlanned = 0 ORDER BY date DESC")
     fun getExpensesByCategory(categoryId: Int): Flow<List<Expense>>
 
+    // 2.1 Сумма расходов без учета категории и планируемых
+    @Query("SELECT SUM(amount) FROM expenses WHERE isPlanned = 0")
+    fun getSumExpensesWithoutCategoryAndPlanned(): Flow<Long?>
+
+    // 2.2 Сумма только планируемых расходов без учета категории
+    @Query("SELECT SUM(amount) FROM expenses WHERE isPlanned = 1")
+    fun getSumPlannedExpensesWithoutCategory(): Flow<Long?>
 
     // 3. Планируемые расходы
     @Query("SELECT * FROM expenses WHERE isPlanned = 1 ORDER BY date DESC")

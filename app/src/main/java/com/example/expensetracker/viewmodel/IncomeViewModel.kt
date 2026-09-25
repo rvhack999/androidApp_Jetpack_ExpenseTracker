@@ -66,7 +66,7 @@ class IncomeViewModel @Inject constructor(
     fun addIncome(name: String, amount: Long, description: String, color: String){
         viewModelScope.launch {
             try {
-                repository.addIncome(name, amount, description, color)
+                repository.addIncome(name, amount, color, description)
                 _error.value = null
             } catch (e: Exception){
                 _error.value = "Ошибка добавления ${e.message}"

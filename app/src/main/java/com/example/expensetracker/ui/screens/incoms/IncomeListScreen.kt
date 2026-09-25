@@ -1,4 +1,4 @@
-package com.example.expensetracker.ui.screens
+package com.example.expensetracker.ui.screens.incoms
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -26,8 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.expensetracker.data.model.Income
-import com.example.expensetracker.data.model.TopBarScreen
-import com.example.expensetracker.ui.theme.CustomTopBar
 import com.example.expensetracker.viewmodel.IncomeViewModel
 
 
@@ -58,8 +52,6 @@ fun IncomeListScreen(
 
     var showAddDialog by remember { mutableStateOf(false) }
     var editingIncome by remember { mutableStateOf<Income?>(null) }
-    var deletingIncome by remember { mutableStateOf<Income?>(null) }
-
 
     Scaffold(
         floatingActionButton = {
@@ -126,7 +118,7 @@ fun IncomeListScreen(
                                 income = income,
                                 modifier = Modifier.animateItem(),
                                 onClick = { editingIncome = income },
-                                onDelete = { deletingIncome = income }
+                                onDelete = { viewModel.deleteIncome(income) }
                             )
                         }
                     }
@@ -150,30 +142,27 @@ fun IncomeListScreen(
             )
         }
 
-//        // Диалог редактирования
-//        if (editingCategory != null) {
-//            EditCategoryDialog(
-//                category = editingCategory!!,
-//                onDismiss = { editingCategory = null },
-//                onConfirm = { name, color ->
-//                    val updated = editingCategory!!.copy(name = name, color = color)
-//                    viewModel.updateCategory(updated)
-//                    editingCategory = null
-//                }
-//            )
-//        }
+        // Диалог редактирования
+        if (editingIncome != null) {
+            EditIncomeDialog(
+                income = editingIncome!!,
+                onDismiss = { editingIncome = null },
+                onConfirm = { amount, description ->
+                    // Берем старый объект и безопасно обновляем только измененные поля
+                    val updated = editingIncome!!.copy(
+                        amount = amount,
+                        description = description,
+                        // Если оригинальные поля были пустыми, подставляем заглушки, чтобы Room не падал
+                        name = editingIncome!!.name.ifBlank { "Доход" },
+                        color = editingIncome!!.color.ifBlank { "#BDBDBD" },
+                        date = editingIncome!!.date.ifBlank { "2026-01-01T00:00:00" }
+                    )
+                    viewModel.updateIncome(updated)
+                    editingIncome = null
+                }
+            )
+        }
 
-//        // Диалог удаления
-//        if (deletingCategory != null) {
-//            DeleteCategoryDialog(
-//                category = deletingCategory!!,
-//                onDismiss = { deletingCategory = null },
-//                onConfirm = {
-//                    viewModel.deleteCategory(deletingCategory!!)
-//                    deletingCategory = null
-//                }
-//            )
-//        }
     }
 }
 
@@ -206,6 +195,15 @@ fun IncomeCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+                if (!income.description.isNullOrBlank()) {
+                    Text(
+                        text = income.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp) // Небольшой отступ между суммой и описанием
+                    )
+                }
 
                 // ИСПРАВЛЕНО: Безопасное отображение даты без падений
                 val displayDate = if (income.date.length >= 10) {

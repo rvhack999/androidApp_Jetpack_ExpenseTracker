@@ -8,7 +8,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,10 +15,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.expensetracker.data.model.TopBarScreen
-import com.example.expensetracker.ui.screens.CategoryListScreen
-import com.example.expensetracker.ui.screens.ExpenseListScreen
-import com.example.expensetracker.ui.screens.IncomeListScreen
+import com.example.expensetracker.ui.screens.categories.CategoryListScreen
+import com.example.expensetracker.ui.screens.expenses.ExpenseListScreen
+import com.example.expensetracker.ui.screens.incoms.IncomeListScreen
 import com.example.expensetracker.ui.theme.CustomTopBar
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.ui.unit.dp
+import com.example.expensetracker.ui.screens.mainScreen.MainScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,41 +47,52 @@ fun MainNavigationContainer() {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    // Передаем текущий активный экран в ваш кастомный бар
                     CustomTopBar(currentScreen) { selectedScreen ->
-                        // Логика переключения экранов при клике на элементы CustomTopBar
                         when (selectedScreen) {
                             TopBarScreen.INCOME -> {
                                 navController.navigate("income") {
-                                    popUpTo("categories") { saveState = true }
+                                    popUpTo("graphics") { saveState = true } // Меняем привязку на стартовый экран
                                     launchSingleTop = true
                                     restoreState = true
                                 }
                             }
                             TopBarScreen.EXPENSES -> {
                                 navController.navigate("categories") {
-                                    popUpTo("categories") { saveState = true }
+                                    popUpTo("graphics") { saveState = true } // Меняем привязку на стартовый экран
                                     launchSingleTop = true
                                     restoreState = true
                                 }
                             }
                             TopBarScreen.GRAPHICS -> {
-                                // Навигация на экран графиков, когда он будет готов
-                                // navController.navigate("graphics")
+                                navController.navigate("graphics") {
+                                    popUpTo("graphics") { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
                         }
                     }
-                }
+                },
+                // ИСПРАВЛЕНО: Убираем лишние системные отступы статус-бара, чтобы уменьшить размер топбара во всем приложении
+                //windowInsets = WindowInsets(0, 0, 0, 0)
             )
         }
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "categories", // Начальный экран (список категорий расходов)
+            startDestination = "graphics", // Ваш новый стартовый экран дашборда
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 60.dp)
+                // ИСПРАВЛЕНО: Вместо ручных 60.dp передаем paddingValues от Scaffold,
+                // чтобы контент автоматически и идеально вставал ровно под CustomTopBar
+                .padding(top = paddingValues.calculateTopPadding() - 35.dp)
+
         ) {
+            // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Регистрируем маршрут "graphics" для вашего нового MainScreen дашборда
+            composable("graphics") {
+                MainScreen(navController = navController)
+            }
+
             // ЭКРАН 1: Список категорий расходов
             composable("categories") {
                 CategoryListScreen(navController = navController)

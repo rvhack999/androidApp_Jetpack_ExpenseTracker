@@ -1,4 +1,4 @@
-package com.example.expensetracker.ui.screens
+package com.example.expensetracker.ui.screens.expenses
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

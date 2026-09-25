@@ -1,4 +1,5 @@
-package com.example.expensetracker.ui.screens
+package com.example.expensetracker.ui.screens.incoms
+
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,66 +16,61 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.expensetracker.data.model.Income
 
 @Composable
-fun AddIncomeDialog(
+fun EditIncomeDialog(
+    income: Income,
     onDismiss: () -> Unit,
-    onConfirm: (
-        name: String,
-        amount: Long,
-        description: String,
-        color: String
-    ) -> Unit
-){
-    var nameText by remember { mutableStateOf("") }
-    var amountText by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var color by remember { mutableStateOf("") }
+    onConfirm: (amount: Long, description: String) -> Unit
+) {
+    // Безопасно переводим копейки в рубли для отображения пользователю
+    var amountText by remember {
+        mutableStateOf((income.amount / 100.0).toString())
+    }
+    var description by remember { mutableStateOf(income.description) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Новый доход") },
+        title = { Text("Редактировать доход") },
         text = {
             Column {
-                // Сумма
                 OutlinedTextField(
                     value = amountText,
                     onValueChange = { input ->
+                        // Регулярное выражение разрешает только ввод чисел с одной точкой
                         if (input.matches(Regex("^\\d*\\.?\\d*$"))) {
                             amountText = input
                         }
                     },
                     label = { Text("Сумма (₽)") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("0.00") }
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Описание
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Описание (необязательно)") },
-                    singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Описание") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
+                    // Переводим рубли обратно в Long (копейки) для базы данных
                     val amount = amountText.toDoubleOrNull()?.times(100)?.toLong() ?: 0L
                     if (amount > 0) {
-                        onConfirm(nameText,amount, description, color)
+                        onConfirm(amount, description)
                     }
                 },
                 enabled = amountText.isNotBlank() && amountText.toDoubleOrNull() != null
             ) {
-                Text("Добавить")
+                Text("Сохранить")
             }
         },
         dismissButton = {
@@ -83,5 +79,4 @@ fun AddIncomeDialog(
             }
         }
     )
-
 }

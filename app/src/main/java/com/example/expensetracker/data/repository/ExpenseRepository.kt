@@ -33,6 +33,12 @@ class ExpenseRepository(
     ): Flow<Long?> =
         expenseDao.getTotalForCategoryAndPeriod(categoryId, startDate, endDate)
 
+    // Сумма расходов без учета категории и планируемых
+    fun getSumExpensesWithoutCategoryAndPlanned(): Flow<Long?> = expenseDao.getSumExpensesWithoutCategoryAndPlanned()
+
+    // Сумма только планируемых расходов без учета категории
+    fun getSumPlannedExpensesWithoutCategory(): Flow<Long?> = expenseDao.getSumPlannedExpensesWithoutCategory()
+
     fun getPlannedTotalForCategoryAndPeriod(
         categoryId: Int,
         startDate: String,

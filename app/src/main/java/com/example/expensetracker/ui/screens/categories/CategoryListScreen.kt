@@ -1,4 +1,4 @@
-package com.example.expensetracker.ui.screens
+package com.example.expensetracker.ui.screens.categories
 
 
 import androidx.compose.foundation.clickable
@@ -28,8 +28,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,11 +45,6 @@ import androidx.navigation.NavController
 import com.example.expensetracker.data.model.Category
 import com.example.expensetracker.viewmodel.CategoryViewModel
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.unit.sp
-import com.example.expensetracker.data.model.AppColors
-import com.example.expensetracker.data.model.TopBarScreen
-import com.example.expensetracker.ui.theme.CustomTopBar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -204,7 +197,6 @@ fun CategoryCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Название (без кружка)
             Text(
                 text = category.name,
                 style = MaterialTheme.typography.titleMedium,
@@ -213,7 +205,6 @@ fun CategoryCard(
                 modifier = Modifier.weight(1f)
             )
 
-            // Кнопки (только для реальных категорий)
             if (category.id != -1) {
                 IconButton(onClick = onEditClick) {
                     Icon(

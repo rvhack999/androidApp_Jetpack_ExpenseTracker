@@ -40,6 +40,14 @@ class ExpenseViewModel @Inject constructor(
     private val _totalSum = MutableStateFlow<Long?>(null)
     val totalSum: StateFlow<Long?> = _totalSum.asStateFlow()
 
+    // Сумма расходов без учета категории и планируемых
+    private val _totalSumWithoutCategoryAndPlanned = MutableStateFlow<Long?>(null)
+    val totalSumWithoutCategoryAndPlanned = _totalSumWithoutCategoryAndPlanned.asStateFlow()
+
+    // Сумма только планируемых расходов без учета категории
+    private val _totalSumPlannedExpensesWithoutCategory = MutableStateFlow<Long?>(null)
+    val totalSumPlannedExpensesWithoutCategory = _totalSumPlannedExpensesWithoutCategory.asStateFlow()
+
     // Состояние загрузки
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -65,8 +73,20 @@ class ExpenseViewModel @Inject constructor(
 
         loadTotalForCategoryInternal(categoryId, startOfMonth, endOfMonth)
         loadPlannedTotalForCategoryInternal(categoryId, startOfMonth, endOfMonth)
-    }
 
+        // ====== СБОР СУММ ДЛЯ MAIN_SCREEN (ДОБАВИТЬ СЮДА) ======
+        viewModelScope.launch {
+            repository.getSumExpensesWithoutCategoryAndPlanned().collect { sum ->
+                _totalSumWithoutCategoryAndPlanned.value = sum ?: 0L
+            }
+        }
+
+        viewModelScope.launch {
+            repository.getSumPlannedExpensesWithoutCategory().collect { sum ->
+                _totalSumPlannedExpensesWithoutCategory.value = sum ?: 0L
+            }
+        }
+    }
 
     private fun loadTotalForCategory(categoryId: Int, startDate: String, endDate: String) {
         viewModelScope.launch {

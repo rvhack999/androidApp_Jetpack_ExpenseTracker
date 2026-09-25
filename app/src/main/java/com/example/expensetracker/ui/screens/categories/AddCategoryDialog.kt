@@ -1,4 +1,4 @@
-package com.example.expensetracker.ui.screens
+package com.example.expensetracker.ui.screens.categories
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,23 +13,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import com.example.expensetracker.data.model.AppColors
-import com.example.expensetracker.data.model.Category
-import androidx.core.graphics.toColorInt
 
 @Composable
-fun EditCategoryDialog(
-    category: Category,
+fun AddCategoryDialog(
     onDismiss: () -> Unit,
     onConfirm: (name: String, color: String) -> Unit
 ) {
-    var name by remember { mutableStateOf(category.name) }
-    var selectedColor by remember {
-        mutableStateOf(Color(category.color.toColorInt()))
-    }
+    var name by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(AppColors.SoftPINK) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Редактировать категорию") },
+        title = { Text("Новая категория") },
         text = {
             Column {
                 OutlinedTextField(
@@ -42,12 +37,21 @@ fun EditCategoryDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Цвет:", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    text = "Выберите цвет:",
+                    style = MaterialTheme.typography.labelMedium
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Сетка цветов
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     AppColors.all.chunked(4).forEach { rowColors ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             rowColors.forEach { color ->
                                 Box(
                                     modifier = Modifier
@@ -58,7 +62,11 @@ fun EditCategoryDialog(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (color == selectedColor) {
-                                        Text("✓", color = Color.Black)
+                                        Text(
+                                            text = "✓",
+                                            color = Color.Black,
+                                            style = MaterialTheme.typography.titleLarge
+                                        )
                                     }
                                 }
                             }
@@ -76,14 +84,18 @@ fun EditCategoryDialog(
                 },
                 enabled = name.isNotBlank()
             ) {
-                Text("Сохранить")
+                Text("Создать")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена") }
+            TextButton(onClick = onDismiss) {
+                Text("Отмена")
+            }
         }
     )
-    fun Color.toArgbHex(): String {
-        return String.format("#%06X", 0xFFFFFF and this.toArgb())
-    }
+}
+
+// Конвертация Compose Color → HEX String
+fun Color.toArgbHex(): String {
+    return String.format("#%06X", 0xFFFFFF and this.toArgb())
 }
