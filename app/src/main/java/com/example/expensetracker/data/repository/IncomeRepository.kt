@@ -31,6 +31,7 @@ class IncomeRepository(private val incomeDao: IncomeDao) {
             description = description,
             color = color
         )
+        incomeDao.insertIncome(income)
     }
 
     // Обновить

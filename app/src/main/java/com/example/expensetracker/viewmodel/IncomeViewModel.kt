@@ -47,6 +47,10 @@ class IncomeViewModel @Inject constructor(
                 _isLoading.value = true
                 repository.getAllIncome().collect { incomes ->
                     _income.value = incomes
+
+                    // ИСПРАВЛЕНО: Явно используем sumOf { ... : Long } для предотвращения падения корутины
+                    _totalSum.value = incomes.sumOf { it.amount }
+
                     _isLoading.value = false
                 }
             } catch (e: Exception) {
@@ -62,14 +66,14 @@ class IncomeViewModel @Inject constructor(
     fun addIncome(name: String, amount: Long, description: String, color: String){
         viewModelScope.launch {
             try {
-                repository.addIncome(name, amount, description,color)
+                repository.addIncome(name, amount, description, color)
                 _error.value = null
-            }
-            catch (e: Exception){
+            } catch (e: Exception){
                 _error.value = "Ошибка добавления ${e.message}"
             }
         }
     }
+
 
     // Обновить доход
     fun updateIncome(income: Income){
@@ -77,9 +81,8 @@ class IncomeViewModel @Inject constructor(
             try {
                 repository.updateIncome(income)
                 _error.value = null
-            }
-            catch (e: Exception){
-                _error.value = "Обика обновления ${e.message}"
+            } catch (e: Exception){
+                _error.value = "Ошибка обновления ${e.message}"
             }
         }
     }
@@ -90,8 +93,7 @@ class IncomeViewModel @Inject constructor(
             try {
                 repository.deleteIncome(income)
                 _error.value = null
-            }
-            catch (e: Exception){
+            } catch (e: Exception){
                 _error.value = "Ошибка удаления ${e.message}"
             }
         }
@@ -102,7 +104,7 @@ class IncomeViewModel @Inject constructor(
         _error.value = null
     }
 
-    // Общая сумма за период
+    // Общая сумма доходов (ИСПРАВЛЕНО: теперь обновляется)
     private val _totalSum = MutableStateFlow<Long?>(null)
     val totalSum: StateFlow<Long?> = _totalSum.asStateFlow()
 

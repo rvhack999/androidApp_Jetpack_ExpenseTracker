@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -71,30 +73,31 @@ fun IncomeListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Итоговая сумма
-            if (totalSum != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer
+            // Итоговая сумма (ИСПРАВЛЕНО: отображается ВСЕГДА, без условий if)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Доходы:",
+                        style = MaterialTheme.typography.labelMedium
                     )
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Доходы:",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                        Text(
-                            text = "${totalSum!! / 100.0} ₽",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    // Безопасное приведение к Long: если null, то 0L
+                    val currentTotal = totalSum ?: 0L
+                    Text(
+                        text = "${currentTotal / 100.0} ₽",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            // Список расходов
+            // Список расходов / доходов (Сдвигаем вниз, чтобы не перекрывал карточку суммы)
             val displayIncome = incomes
 
             when {
@@ -103,18 +106,27 @@ fun IncomeListScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+                displayIncome.isEmpty() -> {
+                    Text(
+                        text = "Список пуст",
+                        modifier = Modifier.align(Alignment.Center),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 else -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 100.dp), // Отступ сверху, чтобы список не залезал ПОД карточку суммы!
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(displayIncome) { income ->
+                        items(displayIncome, key = { it.id }) { income ->
                             IncomeCard(
-                                income = income, // Теперь income имеет правильный тип Income
+                                income = income,
                                 modifier = Modifier.animateItem(),
-                                onClick = { editingIncome = income }, // (Опционально) открытие диалога редактирования
-                                onDelete = { deletingIncome = income } // (Опционально) открытие диалога удаления
+                                onClick = { editingIncome = income },
+                                onDelete = { deletingIncome = income }
                             )
                         }
                     }
@@ -173,7 +185,9 @@ fun IncomeCard(
     onDelete: () -> Unit
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().clickable{onClick()},
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -193,8 +207,15 @@ fun IncomeCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
+                // ИСПРАВЛЕНО: Безопасное отображение даты без падений
+                val displayDate = if (income.date.length >= 10) {
+                    income.date.take(10)
+                } else {
+                    income.date.ifBlank { "Нет даты" }
+                }
+
                 Text(
-                    text = income.date.take(10),
+                    text = displayDate,
                     style = MaterialTheme.typography.labelSmall
                 )
             }
