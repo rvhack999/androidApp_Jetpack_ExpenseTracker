@@ -82,19 +82,6 @@ fun CategoryListScreen(
 
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    CustomTopBar(
-                        TopBarScreen.EXPENSES
-                    ) { }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Добавить категорию")

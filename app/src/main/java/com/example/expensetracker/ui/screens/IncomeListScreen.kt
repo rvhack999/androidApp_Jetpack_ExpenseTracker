@@ -60,19 +60,6 @@ fun IncomeListScreen(
 
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    CustomTopBar(
-                        TopBarScreen.INCOME
-                    ) { }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Добавить категорию")
@@ -134,6 +121,47 @@ fun IncomeListScreen(
                 }
             }
         }
+
+        // Диалог добавления
+        if (showAddDialog) {
+            AddIncomeDialog(
+                onDismiss = { showAddDialog = false },
+                onConfirm = { name, amount, description, color ->
+                    viewModel.addIncome(
+                        name = name,
+                        amount = amount,
+                        description = description,
+                        color = color
+                    )
+                    showAddDialog = false
+                }
+            )
+        }
+
+//        // Диалог редактирования
+//        if (editingCategory != null) {
+//            EditCategoryDialog(
+//                category = editingCategory!!,
+//                onDismiss = { editingCategory = null },
+//                onConfirm = { name, color ->
+//                    val updated = editingCategory!!.copy(name = name, color = color)
+//                    viewModel.updateCategory(updated)
+//                    editingCategory = null
+//                }
+//            )
+//        }
+
+//        // Диалог удаления
+//        if (deletingCategory != null) {
+//            DeleteCategoryDialog(
+//                category = deletingCategory!!,
+//                onDismiss = { deletingCategory = null },
+//                onConfirm = {
+//                    viewModel.deleteCategory(deletingCategory!!)
+//                    deletingCategory = null
+//                }
+//            )
+//        }
     }
 }
 
