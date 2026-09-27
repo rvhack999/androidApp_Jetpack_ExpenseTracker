@@ -34,18 +34,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="ExpenseDaoTest">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection>
-          <targets>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=/home/rvhack/.android/avd/Pixel_9_Pro.avd" />
-              </handle>
-            </Target>
-          </targets>
-        </DialogSelection>
-      </SelectionState>
       <SelectionState runConfigName="CategoryDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection>

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.expensetracker.data.model.Income
 import com.example.expensetracker.data.repository.IncomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
